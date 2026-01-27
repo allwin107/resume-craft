@@ -20,97 +20,65 @@ class LaTeXService:
     
     def generate_latex_from_template(self, user_data: Dict) -> str:
         """
-        Generate LaTeX content from user data using the provided template
+        Generate LaTeX content from user data using standard document class
         """
-        # Base template structure (using the provided format)
-        latex_template = r"""\documentclass{resume}
-\usepackage{etoolbox}
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage[absolute,overlay]{textpos}
-\setlength{\topskip}{0pt}
+        # Use standard article class with custom formatting
+        latex_template = r"""\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[left=0.5in,top=0.5in,right=0.5in,bottom=0.5in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{array}
 
-\makeatletter
-\patchcmd{\@name}{\Huge}{\Large}{}{}
-\makeatother
+% Remove page numbers
+\pagestyle{empty}
 
-\usepackage[left=0.32 in,top=0.32in,right=0.32 in,bottom=0.32in]{geometry}
-\newcommand{\tab}[1]{\hspace{.0\textwidth}\rlap{#1}} 
-\newcommand{\itab}[1]{\hspace{0.9em}\rlap{#1}}
+% Custom section formatting
+\titleformat{\section}{\large\bfseries\uppercase}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+% Custom subsection formatting
+\titleformat{\subsection}{\bfseries}{}{0em}{}
+\titlespacing{\subsection}{0pt}{6pt}{3pt}
 
 \begin{document}
-\vspace*{-1.2cm}
-\vspace*{-0.4cm}
 
-\begin{minipage}[t]{0.74\textwidth}
-\vspace{0pt}
-{\Large \textbf{""" + user_data.get('name', 'YOUR NAME') + r"""}}\\[-6pt]
+% Header with name
+{\LARGE\bfseries """ + user_data.get('name', 'YOUR NAME') + r"""}
 
+\vspace{3pt}
+
+% Contact information
 """ + user_data.get('contact_info', 'Contact Information Here') + r"""
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.24\textwidth}
-\vspace{-6pt}
-\raggedleft
-% Photo placeholder - user can add their photo
-% \includegraphics[width=2.7cm]{photo.jpg}
-\end{minipage}
 
-\vspace{-1.1em}
+\vspace{10pt}
 
-%----------------------------------------------------------------------------------------
-%	OBJECTIVE
-%----------------------------------------------------------------------------------------
-\vspace{-0.3em}
+% Objective
+\section{OBJECTIVE}
+""" + user_data.get('objective', 'Your career objective here.') + r"""
 
-\begin{rSection}{OBJECTIVE}
-\vspace{-0.2em}
-{""" + user_data.get('objective', 'Your career objective here.') + r"""}
-\end{rSection}
-
-%----------------------------------------------------------------------------------------
-%	WORK EXPERIENCE SECTION
-%----------------------------------------------------------------------------------------
-\begin{rSection}{EXPERIENCE}
-\vspace{-0.3em}
+% Experience
+\section{EXPERIENCE}
 """ + user_data.get('experience', '') + r"""
-\end{rSection}
 
-%----------------------------------------------------------------------------------------
-% TECHNICAL STRENGTHS	
-%----------------------------------------------------------------------------------------
-\begin{rSection}{TECHNICAL STRENGTHS}
-\vspace{-0.4em}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}@{\hspace{6ex}}>{\raggedright\arraybackslash}p{0.75\linewidth}}
-\textbf{Technical Skills} & """ + user_data.get('technical_skills', '') + r""" \\   
-\textbf{Soft Skills} & """ + user_data.get('soft_skills', '') + r""" \\ 
+% Technical Strengths
+\section{TECHNICAL STRENGTHS}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}@{\hspace{2em}}>{\raggedright\arraybackslash}p{0.7\linewidth}}
+\textbf{Technical Skills} & """ + user_data.get('technical_skills', '') + r""" \\
+\textbf{Soft Skills} & """ + user_data.get('soft_skills', '') + r""" \\
 \end{tabular}
-\end{rSection}
-\vspace{-1.5em}
 
-%----------------------------------------------------------------------------------------
-%	WORK PROJECTS SECTION
-%----------------------------------------------------------------------------------------
-\begin{rSection}{PROJECTS}
-\vspace{-0.9em}
+% Projects
+\section{PROJECTS}
 """ + user_data.get('projects', '') + r"""
-\end{rSection}
- 
-%----------------------------------------------------------------------------------------
-%	EDUCATION SECTION
-%----------------------------------------------------------------------------------------
-\begin{rSection}{EDUCATION}
-\vspace{-0.3em}
-""" + user_data.get('education', '') + r"""
-\end{rSection}
 
-%----------------------------------------------------------------------------------------
-%	CERTIFICATION SECTION
-%----------------------------------------------------------------------------------------
-\begin{rSection}{CERTIFICATIONS}
-\vspace{-0.3em}
+% Education
+\section{EDUCATION}
+""" + user_data.get('education', '') + r"""
+
+% Certifications
+\section{CERTIFICATIONS}
 """ + user_data.get('certifications', '') + r"""
-\end{rSection}
 
 \end{document}
 """
