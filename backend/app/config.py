@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str
     
     # LaTeX
-    LATEX_MODE: str = "local"  # local or online
+    LATEX_MODE: str = "online"  # local or online (default: online for cloud deployments)
     LATEX_ONLINE_URL: str = "https://latexonline.cc/compile"
     
     # File Upload & Storage
