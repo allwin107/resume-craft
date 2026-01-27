@@ -14,3 +14,4 @@ pylatex==1.4.2
 python-dotenv==1.0.0
 requests==2.31.0
 supabase>=2.3.0
+email-validator>=2.0.0
