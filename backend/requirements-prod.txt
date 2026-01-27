@@ -1,0 +1,4 @@
+# Production dependencies (add to requirements.txt)
+slowapi>=0.1.9
+sentry-sdk[fastapi]>=1.38.0
+python-json-logger>=2.0.7
