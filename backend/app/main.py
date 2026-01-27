@@ -43,7 +43,19 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
+
+# Debug middleware to log requests
+@app.middleware("http")
+async def log_requests(request, call_next):
+    print(f"📝 Incoming request: {request.method} {request.url.path}")
+    print(f"   Origin: {request.headers.get('origin', 'No origin header')}")
+    response = await call_next(request)
+    print(f"   Response status: {response.status_code}")
+    return response
+
 
 # Include routers
 app.include_router(auth_router)
