@@ -68,14 +68,22 @@ Return ONLY the JSON object."""
             
             result_text = response.choices[0].message.content.strip()
             
-            # Extract JSON
+            # Extract JSON - find the outermost braces
             json_start = result_text.find('{')
             json_end = result_text.rfind('}') + 1
             
             if json_start != -1 and json_end > json_start:
                 result_text = result_text[json_start:json_end]
             
-            improved_data = json.loads(result_text)
+            # Parse JSON with strict=False to handle control characters
+            try:
+                improved_data = json.loads(result_text, strict=False)
+            except json.JSONDecodeError:
+                # If parsing fails, try cleaning control characters
+                import re
+                # Replace unescaped control characters
+                cleaned_text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', result_text)
+                improved_data = json.loads(cleaned_text, strict=False)
             
             return improved_data
             
