@@ -75,13 +75,40 @@ Return ONLY the JSON object."""
             if json_start != -1 and json_end > json_start:
                 result_text = result_text[json_start:json_end]
             
-            # Parse JSON with strict=False to handle control characters
+            # Try multiple parsing strategies
+            improved_data = None
+            
+            # Strategy 1: Try direct parsing with strict=False
             try:
                 improved_data = json.loads(result_text, strict=False)
             except json.JSONDecodeError:
-                # If parsing fails, try cleaning control characters
+                pass
+            
+            # Strategy 2: Try with regex to extract field values directly
+            if improved_data is None:
+                try:
+                    import re
+                    # Extract each field manually using regex
+                    improved_data = {}
+                    
+                    # Pattern to match JSON field: "field": "value" or "field": "value with \"quotes\""
+                    # This handles LaTeX backslashes
+                    field_pattern = r'"(\w+)"\s*:\s*"((?:[^"\\]|\\.)*)\"'
+                    matches = re.findall(field_pattern, result_text, re.DOTALL)
+                    
+                    for field, value in matches:
+                        improved_data[field] = value
+                    
+                    if not improved_data:
+                        raise ValueError("No fields extracted")
+                        
+                except Exception:
+                    pass
+            
+            # Strategy 3: Clean and retry
+            if improved_data is None:
                 import re
-                # Replace unescaped control characters
+                # Remove control characters and try again
                 cleaned_text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', result_text)
                 improved_data = json.loads(cleaned_text, strict=False)
             
