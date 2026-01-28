@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import { FileText, LogOut, User, History, LayoutDashboard } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DashboardLayout({
     children,
@@ -34,9 +35,9 @@ export default function DashboardLayout({
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
             {/* Navbar */}
-            <nav className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+            <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center gap-2">
@@ -59,13 +60,16 @@ export default function DashboardLayout({
                                 <History className="w-5 h-5" />
                                 <span className="font-medium">History</span>
                             </Link>
-                            <Link href="/profile" className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors">
+                            <Link href="/profile" className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                                 <User className="w-5 h-5" />
                                 <span className="font-medium">Profile</span>
                             </Link>
+
+                            <ThemeToggle />
+
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors"
+                                className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                             >
                                 <LogOut className="w-5 h-5" />
                                 <span className="font-medium">Logout</span>
