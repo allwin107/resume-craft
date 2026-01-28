@@ -153,7 +153,7 @@ export default function AnalysisResultPage() {
                                 Download Improved Resume (LaTeX)
                             </button>
                             <button
-                                onClick={() => router.push(`/dashboard/editor/${params.id}`)}
+                                onClick={() => router.push(`/editor/${params.id}`)}
                                 className="btn-primary"
                             >
                                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
