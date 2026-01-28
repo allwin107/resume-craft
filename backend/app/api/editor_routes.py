@@ -110,7 +110,7 @@ async def compile_latex_to_pdf(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Compile LaTeX to PDF using online service"""
+    """Note: PDF compilation is not available due to unreliable online compilers"""
     
     analysis = db.query(Analysis).filter(
         Analysis.id == analysis_id,
@@ -129,48 +129,8 @@ async def compile_latex_to_pdf(
             detail="No LaTeX content to compile"
         )
     
-    try:
-        # Compile using LaTeX service
-        latex_service = LaTeXService()
-        from datetime import datetime
-        output_name = f"resume_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
-        pdf_path = latex_service.compile_latex_online(
-            latex_content=analysis.improved_latex,
-            output_name=output_name
-        )
-        
-        # Upload PDF to storage
-        storage = SupabaseStorage()
-        with open(pdf_path, 'rb') as pdf_file:
-            pdf_content = pdf_file.read()
-        
-        pdf_filename = f"{output_name}.pdf"
-        pdf_storage_path = await storage.upload_generated_resume(
-            file_path=pdf_filename,
-            file_content=pdf_content,
-            analysis_id=analysis.id
-        )
-        
-        # Get signed URL for preview
-        pdf_url = await storage.get_signed_url(
-            bucket="generated-resumes",
-            path=pdf_storage_path,
-            expires_in=3600
-        )
-        
-        # Clean up local file
-        import os
-        if os.path.exists(pdf_path):
-            os.unlink(pdf_path)
-        
-        return CompilePDFResponse(
-            success=True,
-            pdf_url=pdf_url
-        )
-        
-    except Exception as e:
-        return CompilePDFResponse(
-            success=False,
-            error=str(e)
-        )
+    # Return helpful message instead of attempting unreliable compilation
+    return CompilePDFResponse(
+        success=False,
+        error="PDF compilation is not available. Please download the .tex file and compile locally using Overleaf (overleaf.com) or your own LaTeX installation."
+    )

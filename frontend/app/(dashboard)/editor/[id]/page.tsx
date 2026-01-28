@@ -145,13 +145,17 @@ export default function LatexEditorPage() {
                         Download .tex
                     </button>
 
-                    <button
-                        onClick={handleCompile}
-                        disabled={isCompiling}
+                    <a
+                        href="https://www.overleaf.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="btn-primary flex items-center gap-2"
                     >
-                        {isCompiling ? 'Compiling...' : 'Compile PDF'}
-                    </button>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.5 10l-4 4-1.5-1.5L10.5 11 13 8.5 14.5 10zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                        </svg>
+                        Compile on Overleaf
+                    </a>
 
                     <button
                         onClick={() => setShowPreview(!showPreview)}
@@ -201,21 +205,28 @@ export default function LatexEditorPage() {
                             <h3 className="font-semibold text-gray-900">PDF Preview</h3>
                         </div>
                         <div className="flex-1 p-4 overflow-auto">
-                            {pdfUrl ? (
-                                <iframe
-                                    src={pdfUrl}
-                                    className="w-full h-full border border-gray-300 rounded-lg bg-white"
-                                    title="PDF Preview"
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full">
-                                    <div className="text-center text-gray-500">
-                                        <FileCode className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                                        <p className="text-lg font-medium mb-2">No PDF Preview</p>
-                                        <p className="text-sm">Click "Compile PDF" to generate preview</p>
+                            <div className="flex items-center justify-center h-full">
+                                <div className="text-center text-gray-500 max-w-md">
+                                    <FileCode className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                    <p className="text-lg font-medium mb-3">PDF Compilation</p>
+                                    <p className="text-sm mb-4">
+                                        For the best results, download the .tex file and compile it on{' '}
+                                        <a
+                                            href="https://www.overleaf.com"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline font-medium"
+                                        >
+                                            Overleaf.com
+                                        </a>
+                                    </p>
+                                    <div className="text-xs text-gray-400 space-y-1">
+                                        <p>1. Click "Download .tex" above</p>
+                                        <p>2. Upload to Overleaf</p>
+                                        <p>3. Compile and download PDF</p>
                                     </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 )}
