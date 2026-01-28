@@ -24,14 +24,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Axios interceptor to add token to requests
+export function setupAxiosInterceptors(token: string | null) {
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+        delete axios.defaults.headers.common['Authorization'];
+    }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Initialize axios interceptor on mount/token change
+    useEffect(() => {
+        setupAxiosInterceptors(token);
+    }, [token]);
+
     useEffect(() => {
         // Check for stored token on mount
         const storedToken = localStorage.getItem('token');
+        console.log('Auth Check - Stored Token:', storedToken ? 'Found' : 'Missing');
+        console.log('Auth Check - API URL:', API_URL);
+
         if (storedToken) {
             setToken(storedToken);
             fetchUser(storedToken);
@@ -42,13 +59,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUser = async (authToken: string) => {
         try {
+            console.log('Fetching user profile...');
             const response = await axios.get(`${API_URL}/api/auth/me`, {
                 headers: { Authorization: `Bearer ${authToken}` }
             });
+            console.log('User profile fetched:', response.data.email);
             setUser(response.data);
         } catch (error) {
             console.error('Error fetching user:', error);
-            logout();
+            // Only logout if 401 (Unauthorized) ensuring token is actually invalid
+            // This prevents logout on network errors or server 500s
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                logout();
+            }
         } finally {
             setIsLoading(false);
         }
@@ -61,8 +84,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         const { access_token } = response.data;
+        if (!access_token) {
+            throw new Error('No access token received');
+        }
+
         setToken(access_token);
         localStorage.setItem('token', access_token);
+        // Set interceptor immediately for subsequent calls
+        setupAxiosInterceptors(access_token);
         await fetchUser(access_token);
     };
 
@@ -100,11 +129,4 @@ export function useAuth() {
     return context;
 }
 
-// Axios interceptor to add token to requests
-export function setupAxiosInterceptors(token: string | null) {
-    if (token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } else {
-        delete axios.defaults.headers.common['Authorization'];
-    }
-}
+
