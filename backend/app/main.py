@@ -8,7 +8,7 @@ import sentry_sdk
 import os
 
 # Import routers
-from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, upload_routes, examples_routes
+from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, examples_routes
 
 # Initialize Sentry for error monitoring
 if os.getenv("SENTRY_DSN"):
@@ -60,7 +60,6 @@ app.include_router(profile_routes.router)
 app.include_router(analysis_routes.router)
 app.include_router(download_routes.router)
 app.include_router(editor_routes.router)
-app.include_router(upload_routes.router)
 app.include_router(examples_routes.router)
 
 
