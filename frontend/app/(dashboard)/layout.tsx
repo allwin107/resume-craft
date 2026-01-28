@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
-import { FileText, LogOut, User, History, LayoutDashboard } from 'lucide-react';
+import { FileText, LogOut, User, History, LayoutDashboard, Menu, X } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DashboardLayout({
@@ -14,6 +14,7 @@ export default function DashboardLayout({
 }) {
     const router = useRouter();
     const { user, logout, isLoading } = useAuth();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -34,6 +35,22 @@ export default function DashboardLayout({
         router.push('/');
     };
 
+    const navLinks = [
+        { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+        { href: '/analyze', icon: FileText, label: 'Analyze' },
+        { href: '/history', icon: History, label: 'History' },
+        {
+            href: '/compare',
+            icon: () => (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            ),
+            label: 'Compare'
+        },
+        { href: '/profile', icon: User, label: 'Profile' },
+    ];
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
             {/* Navbar */}
@@ -47,42 +64,79 @@ export default function DashboardLayout({
                             <span className="text-xl font-bold text-gradient">Resume Analyzer</span>
                         </div>
 
-                        <div className="flex items-center gap-6">
-                            <Link href="/dashboard" className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors">
-                                <LayoutDashboard className="w-5 h-5" />
-                                <span className="font-medium">Dashboard</span>
-                            </Link>
-                            <Link href="/analyze" className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors">
-                                <FileText className="w-5 h-5" />
-                                <span className="font-medium">Analyze</span>
-                            </Link>
-                            <Link href="/history" className="flex items-center gap-2 text-gray-700 hover:text-primary-600 transition-colors">
-                                <History className="w-5 h-5" />
-                                <span className="font-medium">History</span>
-                            </Link>
-                            <Link href="/compare" className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <span className="font-medium">Compare</span>
-                            </Link>
-                            <Link href="/profile" className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                                <User className="w-5 h-5" />
-                                <span className="font-medium">Profile</span>
-                            </Link>
-
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-6">
+                            {navLinks.map((link) => {
+                                const Icon = link.icon;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                        <span className="font-medium">{link.label}</span>
+                                    </Link>
+                                );
+                            })}
                             <ThemeToggle />
-
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            >
+                                <LogOut className="w-5 h-5" />
+                                <span className="font-medium">Logout</span>
+                            </button>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="md:hidden flex items-center gap-3">
+                            <ThemeToggle />
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                {mobileMenuOpen ? (
+                                    <X className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+                                ) : (
+                                    <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                    <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        <div className="px-4 py-3 space-y-1">
+                            {navLinks.map((link) => {
+                                const Icon = link.icon;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                        <span className="font-medium">{link.label}</span>
+                                    </Link>
+                                );
+                            })}
+                            <button
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    handleLogout();
+                                }}
+                                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             >
                                 <LogOut className="w-5 h-5" />
                                 <span className="font-medium">Logout</span>
                             </button>
                         </div>
                     </div>
-                </div>
+                )}
             </nav>
 
             {/* Main Content */}
