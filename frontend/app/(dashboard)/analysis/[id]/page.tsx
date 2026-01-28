@@ -144,23 +144,13 @@ export default function AnalysisResultPage() {
                         Original Resume
                     </a>
                     {analysis.improved_latex && (
-                        <>
-                            <button
-                                onClick={handleDownloadLatex}
-                                className="btn-secondary"
-                            >
-                                <Download className="w-5 h-5 mr-2" />
-                                Download LaTeX
-                            </button>
-                            <a
-                                href={`${API_URL}/api/download/pdf/${params.id}`}
-                                className="btn-primary"
-                                target="_blank"
-                            >
-                                <Download className="w-5 h-5 mr-2" />
-                                Improved Resume PDF
-                            </a>
-                        </>
+                        <button
+                            onClick={handleDownloadLatex}
+                            className="btn-secondary"
+                        >
+                            <Download className="w-5 h-5 mr-2" />
+                            Download Improved Resume (LaTeX)
+                        </button>
                     )}
                 </div>
             </div>
