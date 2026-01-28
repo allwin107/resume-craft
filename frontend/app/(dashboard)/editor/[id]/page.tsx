@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import { ArrowLeft, Save, FileCode, Eye, Download, HelpCircle, Layout } from 'lucide-react';
+import { ArrowLeft, Save, FileCode, Eye, Download, HelpCircle, Layout, Wand2 } from 'lucide-react';
 import KeyboardShortcutsHelp from '@/components/KeyboardShortcutsHelp';
 import TemplateSelector from '@/components/TemplateSelector';
+import { latexFormatter } from '@/lib/latexFormatter';
+import { latexValidator } from '@/lib/latexValidator';
 
 // Dynamically import Monaco Editor (client-side only)
 const Editor = dynamic(
@@ -101,6 +103,18 @@ export default function LatexEditorPage() {
         link.click();
     };
 
+    const handleFormat = () => {
+        try {
+            const formatted = latexFormatter.format(latexContent);
+            setLatexContent(formatted);
+            setSaveMessage('Content formatted! Remember to save.');
+            setTimeout(() => setSaveMessage(''), 2000);
+        } catch (error) {
+            console.error('Format error:', error);
+            alert('Failed to format content');
+        }
+    };
+
     const handleEditorDidMount = (editor: any, monaco: any) => {
         // Custom keyboard shortcut: Ctrl+S / Cmd+S to save
         editor.addAction({
@@ -112,14 +126,13 @@ export default function LatexEditorPage() {
             }
         });
 
-        // Custom keyboard shortcut: Ctrl+Shift+F / Cmd+Shift+F to format (placeholder for now)
+        // Custom keyboard shortcut: Ctrl+Shift+F / Cmd+Shift+F to format
         editor.addAction({
             id: 'format-document',
             label: 'Format Document',
             keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
             run: () => {
-                // Format functionality will be added in next feature
-                alert('Format feature coming soon!');
+                handleFormat();
             }
         });
 
@@ -171,6 +184,15 @@ export default function LatexEditorPage() {
                     {saveMessage && (
                         <span className="text-green-600 text-sm font-medium">{saveMessage}</span>
                     )}
+
+                    <button
+                        onClick={handleFormat}
+                        className="btn-secondary flex items-center gap-2"
+                        title="Format Document (Ctrl+Shift+F)"
+                    >
+                        <Wand2 className="w-4 h-4" />
+                        Format
+                    </button>
 
                     <button
                         onClick={() => setShowTemplateSelector(true)}
