@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import axios from 'axios';
-import { TrendingUp, Calendar, FileText, Search } from 'lucide-react';
+import { TrendingUp, Calendar, FileText, Search, Download } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -14,6 +14,7 @@ export default function HistoryPage() {
     const [filteredAnalyses, setFilteredAnalyses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isExporting, setIsExporting] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -47,13 +48,55 @@ export default function HistoryPage() {
         }
     };
 
+    const handleExport = async (format: 'csv' | 'json') => {
+        setIsExporting(true);
+        try {
+            const response = await axios.get(`${API_URL}/api/analytics/export?format=${format}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob'
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `analysis_history.${format}`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Failed to export data');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     return (
         <div className="space-y-8 animate-fade-in">
             <div className="flex justify-between items-center">
-                <h1 className="text-4xl font-bold text-gradient">Analysis History</h1>
-                <Link href="/analyze" className="btn-primary">
-                    New Analysis
-                </Link>
+                <h1 className="text-3xl font-bold text-gray-900">Analysis History</h1>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => handleExport('csv')}
+                        disabled={isExporting || analyses.length === 0}
+                        className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export CSV
+                    </button>
+                    <button
+                        onClick={() => handleExport('json')}
+                        disabled={isExporting || analyses.length === 0}
+                        className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export JSON
+                    </button>
+                    <Link href="/analyze" className="btn-primary">
+                        New Analysis
+                    </Link>
+                </div>
             </div>
 
             {/* Search */}

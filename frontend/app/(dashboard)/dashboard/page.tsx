@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/app/context/AuthContext';
-import { FileText, History as HistoryIcon, TrendingUp, ArrowRight } from 'lucide-react';
+import { FileText, History as HistoryIcon, TrendingUp, ArrowRight, Users, Award, Zap, BarChart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import WelcomeTour from '@/components/onboarding/WelcomeTour';
+import StatsCard from '@/components/analytics/StatsCard';
+import TrendsChart from '@/components/analytics/TrendsChart';
+import ScoreDistribution from '@/components/analytics/ScoreDistribution';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -14,10 +17,13 @@ export default function DashboardPage() {
     const [recentAnalyses, setRecentAnalyses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showTour, setShowTour] = useState(false);
+    const [analytics, setAnalytics] = useState<any>(null);
+    const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
     useEffect(() => {
         if (token) {
             fetchRecentAnalyses();
+            fetchAnalytics();
         }
     }, [token]);
 
@@ -48,17 +54,69 @@ export default function DashboardPage() {
         localStorage.setItem('hasSeenTour', 'true');
     };
 
+    const fetchAnalytics = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/analytics/stats?period=month`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAnalytics(response.data);
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
+        } finally {
+            setAnalyticsLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-8 animate-fade-in">
-            {/* Welcome Section */}
-            <div className="card-glass">
-                <h1 className="text-3xl font-bold mb-2">
-                    Welcome back, {user?.full_name || user?.username}! 👋
+            {/* Welcome Message */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2" id="dashboard-title">
+                    Welcome back, {user?.full_name || 'there'}! 👋
                 </h1>
                 <p className="text-gray-600">
-                    Ready to analyze your resume and land your dream job?
+                    Track your resume analysis progress and improve your job applications
                 </p>
             </div>
+
+            {/* Analytics Section */}
+            {!analyticsLoading && analytics && (
+                <div className="mb-8">
+                    {/* Stats Overview */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <StatsCard
+                            title="Total Analyses"
+                            value={analytics.stats.total_analyses}
+                            subtitle="All time"
+                            icon={<BarChart className="w-6 h-6 text-primary-600" />}
+                        />
+                        <StatsCard
+                            title="Average Score"
+                            value={`${analytics.stats.avg_match_score}%`}
+                            subtitle="Match rate"
+                            icon={<TrendingUp className="w-6 h-6 text-primary-600" />}
+                        />
+                        <StatsCard
+                            title="Best Match"
+                            value={`${analytics.stats.best_match_score}%`}
+                            subtitle="Top score"
+                            icon={<Award className="w-6 h-6 text-primary-600" />}
+                        />
+                        <StatsCard
+                            title="Improved"
+                            value={analytics.stats.total_improved}
+                            subtitle={`${(analytics.stats.improvement_rate * 100).toFixed(0)}% rate`}
+                            icon={<Zap className="w-6 h-6 text-primary-600" />}
+                        />
+                    </div>
+
+                    {/* Charts */}
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        <TrendsChart data={analytics.trends} type="line" />
+                        <ScoreDistribution distribution={analytics.score_distribution} />
+                    </div>
+                </div>
+            )}
 
             {/* Onboarding Tour */}
             <WelcomeTour run={showTour} onFinish={handleTourFinish} />
