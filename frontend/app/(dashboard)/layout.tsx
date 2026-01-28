@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
-import { FileText, LogOut, User, History, LayoutDashboard, Menu, X } from 'lucide-react';
+import { FileText, LogOut, User, History, LayoutDashboard, Menu, X, MessageCircle } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import FeedbackModal from '@/components/FeedbackModal';
 
 export default function DashboardLayout({
     children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
     const router = useRouter();
     const { user, logout, isLoading } = useAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -143,6 +145,18 @@ export default function DashboardLayout({
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {children}
             </main>
+
+            {/* Floating Feedback Button */}
+            <button
+                onClick={() => setFeedbackOpen(true)}
+                className="fixed bottom-6 right-6 bg-gradient-to-br from-primary-600 to-primary-400 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-40"
+                title="Send Feedback"
+            >
+                <MessageCircle className="w-6 h-6" />
+            </button>
+
+            {/* Feedback Modal */}
+            <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </div>
     );
 }

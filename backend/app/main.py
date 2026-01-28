@@ -9,7 +9,7 @@ import sentry_sdk
 import os
 
 # Import routers
-from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, examples_routes, analytics_routes, versions_routes
+from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, examples_routes, analytics_routes, versions_routes, feedback_routes
 
 # Import error handlers
 from app.core.exceptions import ResumeAnalyzerException
@@ -79,6 +79,7 @@ app.include_router(editor_routes.router)
 app.include_router(examples_routes.router)
 app.include_router(analytics_routes.router)
 app.include_router(versions_routes.router)
+app.include_router(feedback_routes.router)
 
 # Register error handlers
 app.add_exception_handler(ResumeAnalyzerException, resume_analyzer_exception_handler)

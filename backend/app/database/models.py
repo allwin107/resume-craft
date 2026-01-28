@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey, Boolean, JSON
+from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey, Boolean, JSON, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.database import Base
@@ -100,15 +100,32 @@ class Analysis(Base):
 
 
 class ResumeVersion(Base):
-    """Resume Version model for storing multiple improved versions"""
+    """Resume Version model for saving multiple iterations"""
     __tablename__ = "resume_versions"
     
     id = Column(Integer, primary_key=True, index=True)
-    analysis_id = Column(Integer, ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False)
+    analysis_id = Column(Integer, ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False, index=True)
     version_number = Column(Integer, nullable=False)
     latex_content = Column(Text, nullable=False)
     description = Column(String(500))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # Relationship
+    # Relationships
     analysis = relationship("Analysis", back_populates="versions")
+
+
+class Feedback(Base):
+    """User Feedback model"""
+    __tablename__ = "feedback"
+    __table_args__ = (
+        Index('ix_feedback_user_id', 'user_id'),
+        Index('ix_feedback_created_at', 'created_at'),
+    )
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    rating = Column(Integer)  # 1-5 stars
+    message = Column(Text, nullable=False)
+    category = Column(String(50))  # bug, feature, general
+    email = Column(String(255))  # For anonymous feedback
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
