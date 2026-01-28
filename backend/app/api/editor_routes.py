@@ -9,6 +9,7 @@ from app.database.models import User, Analysis
 from app.auth.auth import get_current_active_user
 from app.services.latex_service import LaTeXService
 from app.services.supabase_storage import SupabaseStorage
+from app.sample_data.latex_templates import LATEX_TEMPLATES
 
 
 router = APIRouter(prefix="/api/editor", tags=["Editor"])
@@ -134,3 +135,35 @@ async def compile_latex_to_pdf(
         success=False,
         error="PDF compilation is not available. Please download the .tex file and compile locally using Overleaf (overleaf.com) or your own LaTeX installation."
     )
+
+
+@router.get("/templates", tags=["Templates"])
+async def get_latex_templates():
+    """Get available LaTeX resume templates"""
+    templates_list = [
+        {
+            "id": template_id,
+            "name": template_data["name"],
+            "description": template_data["description"]
+        }
+        for template_id, template_data in LATEX_TEMPLATES.items()
+    ]
+    return {"templates": templates_list}
+
+
+@router.get("/templates/{template_id}", tags=["Templates"])
+async def get_template_content(template_id: str):
+    """Get specific template content"""
+    if template_id not in LATEX_TEMPLATES:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Template not found"
+        )
+    
+    template = LATEX_TEMPLATES[template_id]
+    return {
+        "id": template_id,
+        "name": template["name"],
+        "description": template["description"],
+        "content": template["content"]
+    }

@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import { ArrowLeft, Save, FileCode, Eye, Download, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Save, FileCode, Eye, Download, HelpCircle, Layout } from 'lucide-react';
 import KeyboardShortcutsHelp from '@/components/KeyboardShortcutsHelp';
+import TemplateSelector from '@/components/TemplateSelector';
 
 // Dynamically import Monaco Editor (client-side only)
 const Editor = dynamic(
@@ -25,6 +26,7 @@ export default function LatexEditorPage() {
     const [isCompiling, setIsCompiling] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+    const [showTemplateSelector, setShowTemplateSelector] = useState(false);
     const [error, setError] = useState('');
     const [saveMessage, setSaveMessage] = useState('');
 
@@ -171,6 +173,14 @@ export default function LatexEditorPage() {
                     )}
 
                     <button
+                        onClick={() => setShowTemplateSelector(true)}
+                        className="btn-secondary flex items-center gap-2"
+                    >
+                        <Layout className="w-4 h-4" />
+                        Templates
+                    </button>
+
+                    <button
                         onClick={() => setShowShortcutsHelp(true)}
                         className="btn-secondary flex items-center gap-2"
                         title="Keyboard Shortcuts (Shift+?)"
@@ -288,6 +298,17 @@ export default function LatexEditorPage() {
             <KeyboardShortcutsHelp
                 isOpen={showShortcutsHelp}
                 onClose={() => setShowShortcutsHelp(false)}
+            />
+
+            {/* Template Selector */}
+            <TemplateSelector
+                isOpen={showTemplateSelector}
+                onClose={() => setShowTemplateSelector(false)}
+                onSelectTemplate={(content) => {
+                    setLatexContent(content);
+                    setSaveMessage('Template applied! Remember to save your changes.');
+                    setTimeout(() => setSaveMessage(''), 3000);
+                }}
             />
         </div>
     );
