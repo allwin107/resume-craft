@@ -56,6 +56,10 @@ app.add_middleware(
     max_age=3600,
 )
 
+# Add GZIP compression for responses
+from fastapi.middleware.gzip import GZipMiddleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
+
 # Debug middleware to log requests
 @app.middleware("http")
 async def log_requests(request, call_next):
