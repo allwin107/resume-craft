@@ -117,10 +117,6 @@ class ResumeVersion(Base):
 class Feedback(Base):
     """User Feedback model"""
     __tablename__ = "feedback"
-    __table_args__ = (
-        Index('ix_feedback_user_id', 'user_id'),
-        Index('ix_feedback_created_at', 'created_at'),
-    )
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
@@ -129,3 +125,4 @@ class Feedback(Base):
     category = Column(String(50))  # bug, feature, general
     email = Column(String(255))  # For anonymous feedback
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+
