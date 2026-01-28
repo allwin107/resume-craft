@@ -1,0 +1,17 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.env*.local
+.env
+.vercel
+build
+dist
+__tests__
+*.test.ts
+*.test.tsx
+jest.config.js
+jest.setup.js
