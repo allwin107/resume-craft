@@ -96,3 +96,19 @@ class Analysis(Base):
     user = relationship("User", back_populates="analyses")
     resume = relationship("Resume", back_populates="analyses")
     job_description = relationship("JobDescription", back_populates="analyses")
+    versions = relationship("ResumeVersion", back_populates="analysis", cascade="all, delete-orphan")
+
+
+class ResumeVersion(Base):
+    """Resume Version model for storing multiple improved versions"""
+    __tablename__ = "resume_versions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    analysis_id = Column(Integer, ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False)
+    version_number = Column(Integer, nullable=False)
+    latex_content = Column(Text, nullable=False)
+    description = Column(String(500))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationship
+    analysis = relationship("Analysis", back_populates="versions")
