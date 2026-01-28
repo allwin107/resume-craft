@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,11 +18,15 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body>
-                <ThemeProvider>
-                    <AuthProvider>
-                        {children}
-                    </AuthProvider>
-                </ThemeProvider>
+                <ErrorBoundary>
+                    <ThemeProvider>
+                        <ToastProvider>
+                            <AuthProvider>
+                                {children}
+                            </AuthProvider>
+                        </ToastProvider>
+                    </ThemeProvider>
+                </ErrorBoundary>
             </body>
         </html>
     );

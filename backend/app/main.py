@@ -4,11 +4,23 @@ from app.config import settings
 from app.database.database import init_db
 from app.middleware.rate_limit import limiter, rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 import sentry_sdk
 import os
 
 # Import routers
 from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, examples_routes, analytics_routes, versions_routes
+
+# Import error handlers
+from app.core.exceptions import ResumeAnalyzerException
+from app.core.error_handlers import (
+    resume_analyzer_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+    general_exception_handler
+)
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Initialize Sentry for error monitoring
 if os.getenv("SENTRY_DSN"):
@@ -63,6 +75,12 @@ app.include_router(editor_routes.router)
 app.include_router(examples_routes.router)
 app.include_router(analytics_routes.router)
 app.include_router(versions_routes.router)
+
+# Register error handlers
+app.add_exception_handler(ResumeAnalyzerException, resume_analyzer_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 
 @app.on_event("startup")
