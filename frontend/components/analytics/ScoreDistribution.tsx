@@ -44,7 +44,7 @@ export default function ScoreDistribution({ distribution }: ScoreDistributionPro
                             borderRadius: '8px',
                             padding: '12px'
                         }}
-                        formatter={(value: number) => [`${value} analyses`, 'Count']}
+                        formatter={(value: number | undefined) => value !== undefined ? [`${value} analyses`, 'Count'] : ['0 analyses', 'Count']}
                     />
                     <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                         {data.map((entry, index) => (

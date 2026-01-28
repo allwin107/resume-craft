@@ -24,7 +24,8 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-joyride": "^2.9.3",
-    "react-syntax-highlighter": "^16.1.0"
+    "react-syntax-highlighter": "^16.1.0",
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.3",
