@@ -42,7 +42,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 # Configure CORS
-print(f"🔧 CORS Configuration:")
+print(f"CORS Configuration:")
 print(f"   Allowed Origins: {settings.CORS_ORIGINS}")
 print(f"   Type: {type(settings.CORS_ORIGINS)}")
 
