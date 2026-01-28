@@ -33,7 +33,12 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE_MB: int = 10
     
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://resume-craft-frontend-app.vercel.app",
+        "https://resume-craft-frontend-app.vercel.app/"
+    ]
     
     class Config:
         env_file = ".env"
