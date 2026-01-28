@@ -5,7 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import axios from 'axios';
-import { TrendingUp, CheckCircle, XCircle, Lightbulb, Download, Sparkles, ArrowLeft } from 'lucide-react';
+import { TrendingUp, CheckCircle, XCircle, Lightbulb, Download, Sparkles, FileText, Upload, ArrowLeft, Eye } from 'lucide-react';
+import LoadingSteps from '@/components/LoadingSteps';
+import LaTeXPreviewModal from '@/components/LaTeXPreviewModal';
 import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -15,8 +17,10 @@ export default function AnalysisResultPage() {
     const router = useRouter();
     const { token } = useAuth();
     const [analysis, setAnalysis] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isImproving, setIsImproving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [improving, setImproving] = useState(false);
+    const [improvementStep, setImprovementStep] = useState(0);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -60,24 +64,38 @@ export default function AnalysisResultPage() {
         } catch (err: any) {
             setError('Failed to load analysis');
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     const handleImproveResume = async () => {
-        setIsImproving(true);
+        setImproving(true);
+        setImprovementStep(0);
+
+        // Simulate progress steps
+        const steps = [
+            { delay: 500, step: 0 },   // Parsing resume
+            { delay: 2000, step: 1 },  // Analyzing content
+            { delay: 2500, step: 2 },  // Generating improvements
+            { delay: 1500, step: 3 },  // Creating LaTeX
+        ];
+
+        steps.forEach(({ delay, step }) => {
+            setTimeout(() => setImprovementStep(step), delay);
+        });
+
         try {
             await axios.post(
                 `${API_URL}/api/analyze/improve`,
                 { analysis_id: params.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert('Resume improved successfully! You can now download the improved version.');
-            fetchAnalysis();
+            setImprovementStep(4); // Complete
+            await fetchAnalysis();
         } catch (err) {
             alert('Failed to improve resume. Please try again.');
         } finally {
-            setIsImproving(false);
+            setImproving(false);
         }
     };
 
@@ -105,7 +123,7 @@ export default function AnalysisResultPage() {
     };
 
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
                 <div className="animate-pulse-slow text-primary-600 text-lg">Loading analysis...</div>
@@ -146,11 +164,18 @@ export default function AnalysisResultPage() {
                     {analysis.improved_latex && (
                         <>
                             <button
+                                onClick={() => setShowPreviewModal(true)}
+                                className="btn-secondary"
+                            >
+                                <Eye className="w-5 h-5 mr-2" />
+                                Preview LaTeX
+                            </button>
+                            <button
                                 onClick={handleDownloadLatex}
                                 className="btn-secondary"
                             >
                                 <Download className="w-5 h-5 mr-2" />
-                                Download Improved Resume (LaTeX)
+                                Download LaTeX
                             </button>
                             <button
                                 onClick={() => router.push(`/editor/${params.id}`)}
@@ -280,24 +305,77 @@ export default function AnalysisResultPage() {
                 <p className="text-gray-700 whitespace-pre-line">{analysis.summary}</p>
             </div>
 
-            {/* AI Improve Button */}
-            {!analysis.improved_latex && (
+            {/* AI Improve Button / Loading Steps */}
+            {!analysis.improved_latex && !improving && (
                 <div className="card bg-gradient-to-r from-primary-50 to-purple-50 border-primary-200">
-                    <div className="text-center">
-                        <Sparkles className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold mb-2">Want an AI-Improved Resume?</h3>
-                        <p className="text-gray-600 mb-6">
-                            Let our AI automatically improve your resume based on the job description and identified gaps.
-                        </p>
-                        <button
-                            onClick={handleImproveResume}
-                            disabled={isImproving}
-                            className="btn-primary disabled:opacity-50"
-                        >
-                            {isImproving ? 'Improving...' : 'Generate Improved Resume'}
-                        </button>
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                                <Sparkles className="w-6 h-6 text-primary-600" />
+                                AI-Powered Resume Enhancement
+                            </h2>
+                            <p className="text-gray-700 mb-4">
+                                Let our AI analyze your resume and generate an improved version in professional LaTeX format,
+                                optimized for the job description.
+                            </p>
+                            <button
+                                onClick={handleImproveResume}
+                                disabled={improving}
+                                className="btn-primary disabled:opacity-50"
+                            >
+                                {improving ? 'Improving...' : 'Improve Resume'}
+                            </button>
+                        </div>
                     </div>
                 </div>
+            )}
+
+            {/* Loading Steps Modal */}
+            {improving && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4">
+                        <h2 className="text-2xl font-bold mb-6 text-center">Improving Your Resume</h2>
+                        <LoadingSteps
+                            currentStep={improvementStep}
+                            steps={[
+                                {
+                                    id: 'parse',
+                                    label: 'Parsing Resume',
+                                    description: 'Extracting text and analyzing document structure'
+                                },
+                                {
+                                    id: 'analyze',
+                                    label: 'Analyzing Content',
+                                    description: 'Comparing your resume with job requirements'
+                                },
+                                {
+                                    id: 'generate',
+                                    label: 'Generating Improvements',
+                                    description: 'Creating optimized content with AI'
+                                },
+                                {
+                                    id: 'latex',
+                                    label: 'Creating LaTeX',
+                                    description: 'Formatting your improved resume in professional LaTeX'
+                                },
+                                {
+                                    id: 'complete',
+                                    label: 'Complete!',
+                                    description: 'Your improved resume is ready'
+                                }
+                            ]}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* LaTeX Preview Modal */}
+            {analysis.improved_latex && (
+                <LaTeXPreviewModal
+                    isOpen={showPreviewModal}
+                    onClose={() => setShowPreviewModal(false)}
+                    latexContent={analysis.improved_latex}
+                />
             )}
         </div>
     );
