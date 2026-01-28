@@ -226,9 +226,11 @@ async def improve_resume(
         realtime = RealtimeService()
         await realtime.update_analysis_progress(analysis.id, "improving", 0)
         
-        # Generate improved resume
+        # Generate improved resume LaTeX content (skip PDF compilation for now)
         editor = ResumeEditor()
-        latex_content, pdf_path = editor.generate_improved_resume(
+        
+        # Get improved content from AI
+        improved_data = editor.improve_resume_content(
             resume_text=analysis.resume.extracted_text,
             jd_text=analysis.job_description.description,
             missing_skills=analysis.missing_skills or [],
@@ -237,10 +239,15 @@ async def improve_resume(
         
         await realtime.update_analysis_progress(analysis.id, "improving", 50)
         
-        # Upload generated files to Supabase
-        storage = SupabaseStorage()
+        # Generate LaTeX from improved data
+        from app.services.latex_service import LaTeXService
+        latex_service = LaTeXService()
+        latex_content = latex_service.generate_latex_from_template(improved_data)
         
-        # Upload LaTeX
+        await realtime.update_analysis_progress(analysis.id, "improving", 70)
+        
+        # Upload LaTeX file to Supabase
+        storage = SupabaseStorage()
         latex_filename = f"improved_{datetime.now().strftime('%Y%m%d_%H%M%S')}.tex"
         latex_storage_path = await storage.upload_generated_resume(
             file_path=latex_filename,
@@ -248,26 +255,9 @@ async def improve_resume(
             analysis_id=analysis.id
         )
         
-        # Upload PDF
-        with open(pdf_path, 'rb') as pdf_file:
-            pdf_content = pdf_file.read()
-        
-        pdf_filename = f"improved_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        pdf_storage_path = await storage.upload_generated_resume(
-            file_path=pdf_filename,
-            file_content=pdf_content,
-            analysis_id=analysis.id
-        )
-        
-        # Clean up local PDF file
-        if os.path.exists(pdf_path):
-            os.unlink(pdf_path)
-        
-        # Update analysis with improved resume
+        # Update analysis with improved resume (LaTeX only, PDF can be generated locally)
         analysis.improved_latex = latex_content
-        analysis.improved_pdf_path = f"supabase://{pdf_storage_path}"
         analysis.latex_storage_path = latex_storage_path
-        analysis.pdf_storage_path = pdf_storage_path
         analysis.progress_status = "completed"
         analysis.progress_percentage = 100
         
@@ -279,7 +269,8 @@ async def improve_resume(
             "message": "Resume improved successfully",
             "analysis_id": analysis.id,
             "latex_available": True,
-            "pdf_available": True
+            "pdf_available": False,
+            "note": "LaTeX file generated. You can download and compile it locally to create PDF."
         }
         
     except Exception as e:
