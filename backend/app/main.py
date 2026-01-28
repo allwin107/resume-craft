@@ -12,6 +12,7 @@ from app.api.auth_routes import router as auth_router
 from app.api.profile_routes import router as profile_router
 from app.api.analysis_routes import router as analysis_router
 from app.api.download_routes import router as download_router
+from app.api.editor_routes import router as editor_router
 
 # Initialize Sentry for error monitoring
 if os.getenv("SENTRY_DSN"):
@@ -62,6 +63,7 @@ app.include_router(auth_router)
 app.include_router(profile_router)
 app.include_router(analysis_router)
 app.include_router(download_router)
+app.include_router(editor_router)
 
 
 @app.on_event("startup")
