@@ -59,9 +59,9 @@ export default function ExamplesPage() {
             <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-3 mb-4">
                     <Sparkles className="w-8 h-8 text-primary-600" />
-                    <h1 className="text-4xl font-bold">Try Example Resumes</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Try Example Resumes</h1>
                 </div>
-                <p className="text-xl text-gray-600">
+                <p className="text-xl text-gray-600 dark:text-gray-300">
                     Test our AI-powered resume analysis with pre-loaded examples
                 </p>
             </div>
@@ -80,8 +80,8 @@ export default function ExamplesPage() {
                             </div>
                             <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" />
                         </div>
-                        <h3 className="text-2xl font-bold mb-2">{example.title}</h3>
-                        <p className="text-gray-600 mb-4">{example.description}</p>
+                        <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">{example.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 mb-4">{example.description}</p>
                         <button
                             className="btn-primary w-full"
                             onClick={(e) => {
@@ -96,15 +96,15 @@ export default function ExamplesPage() {
             </div>
 
             {/* Info Section */}
-            <div className="card bg-gradient-to-r from-primary-50 to-purple-50 border-primary-200">
-                <h2 className="text-2xl font-bold mb-4">How It Works</h2>
+            <div className="card bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border-primary-200 dark:border-primary-700">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">How It Works</h2>
                 <div className="grid md:grid-cols-3 gap-6">
                     <div className="text-center">
                         <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-3">
                             1
                         </div>
-                        <h3 className="font-semibold mb-2">Select Example</h3>
-                        <p className="text-sm text-gray-600">
+                        <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Select Example</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                             Choose from our curated example resumes
                         </p>
                     </div>
@@ -112,8 +112,8 @@ export default function ExamplesPage() {
                         <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-3">
                             2
                         </div>
-                        <h3 className="font-semibold mb-2">Auto-Populate</h3>
-                        <p className="text-sm text-gray-600">
+                        <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Auto-Populate</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                             Resume and job description automatically loaded
                         </p>
                     </div>
@@ -121,8 +121,8 @@ export default function ExamplesPage() {
                         <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-3">
                             3
                         </div>
-                        <h3 className="font-semibold mb-2">See Results</h3>
-                        <p className="text-sm text-gray-600">
+                        <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">See Results</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                             Get instant AI analysis and improvements
                         </p>
                     </div>
@@ -135,6 +135,6 @@ export default function ExamplesPage() {
                     ← Back to Dashboard
                 </Link>
             </div>
-        </div>
+        </div >
     );
 }

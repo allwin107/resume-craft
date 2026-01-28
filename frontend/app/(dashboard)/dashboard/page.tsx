@@ -71,10 +71,10 @@ export default function DashboardPage() {
         <div className="space-y-8 animate-fade-in">
             {/* Welcome Message */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2" id="dashboard-title">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2" id="dashboard-title">
                     Welcome back, {user?.full_name || 'there'}! 👋
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                     Track your resume analysis progress and improve your job applications
                 </p>
             </div>
@@ -122,11 +122,11 @@ export default function DashboardPage() {
             <WelcomeTour run={showTour} onFinish={handleTourFinish} />
 
             {/* Try Examples Card */}
-            <div className="card bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200" data-tour="examples">
+            <div className="card bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700" data-tour="examples">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
-                        <h2 className="text-2xl font-bold mb-2">✨ Try Example Resumes</h2>
-                        <p className="text-gray-700 mb-4">
+                        <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">✨ Try Example Resumes</h2>
+                        <p className="text-gray-700 dark:text-gray-300 mb-4">
                             New here? Test our AI with pre-loaded example resumes to see the magic in action!
                         </p>
                         <Link href="/examples" className="btn-primary inline-block">
@@ -144,11 +144,11 @@ export default function DashboardPage() {
                             <FileText className="w-6 h-6 text-primary-600 group-hover:text-white" />
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-gray-900 dark:text-white">
                                 New Analysis
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Upload your resume and compare it against a job description
                             </p>
                         </div>
@@ -161,11 +161,11 @@ export default function DashboardPage() {
                             <HistoryIcon className="w-6 h-6 text-green-600 group-hover:text-white" />
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-gray-900 dark:text-white">
                                 View History
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Review your past analyses and track your progress
                             </p>
                         </div>
@@ -175,7 +175,7 @@ export default function DashboardPage() {
 
             {/* Recent Analyses */}
             <div className="card">
-                <h2 className="text-2xl font-bold mb-6">Recent Analyses</h2>
+                <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Recent Analyses</h2>
 
                 {isLoading ? (
                     <div className="text-center py-8 text-gray-500">Loading...</div>
@@ -189,8 +189,8 @@ export default function DashboardPage() {
                             >
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <h3 className="font-semibold text-lg">{analysis.job_title}</h3>
-                                        <p className="text-sm text-gray-600">{analysis.resume_filename}</p>
+                                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{analysis.job_title}</h3>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">{analysis.resume_filename}</p>
                                     </div>
                                     <div className="text-right">
                                         <div className="flex items-center gap-2">
