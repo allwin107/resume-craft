@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
+from datetime import datetime
 
 from app.database.database import get_db
 from app.database.models import User, Analysis
@@ -60,7 +61,7 @@ async def get_latex_for_editing(
     return LaTeXContentResponse(
         analysis_id=analysis.id,
         latex_content=analysis.improved_latex,
-        last_updated=analysis.updated_at.isoformat()
+        last_updated=(analysis.created_at or datetime.now()).isoformat()
     )
 
 
