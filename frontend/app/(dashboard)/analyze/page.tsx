@@ -209,6 +209,7 @@ export default function AnalyzePage() {
                                 Job Description *
                             </label>
                             <textarea
+                                data-tour="job-description"
                                 value={jdText}
                                 onChange={(e) => setJdText(e.target.value)}
                                 className="input-field min-h-[300px] resize-y"
@@ -221,6 +222,7 @@ export default function AnalyzePage() {
 
                 {/* Analyze Button */}
                 <button
+                    data-tour="analyze-button"
                     type="submit"
                     disabled={isAnalyzing || !resumeFile || !jdText}
                     className="btn-primary w-full text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"

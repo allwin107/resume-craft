@@ -1,40 +1,40 @@
-# Phase 1 - Dependency Installation
+# Phase 1 - Installation Instructions
 
-## Required Dependencies
+## PowerShell Execution Policy Issue
 
-Run these commands in the frontend directory:
+Since PowerShell has execution policy restrictions, please use **Command Prompt (CMD)** instead.
 
-```bash
-cd frontend
+## Installation Steps
 
-# Install react-syntax-highlighter for LaTeX preview
-npm install react-syntax-highlighter
-npm install --save-dev @types/react-syntax-highlighter
+1. Open **Command Prompt** (not PowerShell)
+2. Navigate to the frontend directory:
+   ```cmd
+   cd C:\Users\admin\Projects\resume-analyzer\frontend
+   ```
 
-# Install react-joyride for onboarding tutorial (will be needed for next feature)
-npm install react-joyride
-```
+3. Install the dependencies:
+   ```cmd
+   npm install react-syntax-highlighter @types/react-syntax-highlighter react-joyride
+   ```
 
-## What Was Added
+4. After installation, commit and push:
+   ```cmd
+   cd ..
+   git add frontend/package.json frontend/package-lock.json
+   git commit -m "Add dependencies for Phase 1 UX enhancements"
+   git push
+   ```
 
-### 1. Loading States (✅ Completed)
-- **Components:** `LoadingSteps.tsx`
-- **Features:** Multi-step progress indicator with animations
-- **Integration:** Analysis page shows progress during improvement
+## What These Dependencies Do
 
-### 2. LaTeX Preview (✅ Completed)
-- **Components:** `LaTeXPreviewModal.tsx`
-- **Dependencies:** react-syntax-highlighter
-- **Features:** Syntax highlighting, copy button, fullscreen mode
+- **react-syntax-highlighter**: Provides syntax highlighting for LaTeX preview
+- **@types/react-syntax-highlighter**: TypeScript types
+- **react-joyride**: Interactive tutorial/onboarding (for next feature)
 
-### 3. Example Resumes (⏳ Next)
-- Backend API for sample resumes
-- Frontend examples page
+## After Installation
 
-### 4. Onboarding Tutorial (⏳ Next)
-- Dependencies: react-joyride
-- Interactive tour for first-time users
-
-## Install Now
-
-Run the commands above, then we'll test and deploy!
+Once installed and pushed, Vercel will automatically redeploy with the new features:
+- ✅ Loading progress indicators
+- ✅ LaTeX preview modal
+- ⏳ Example resumes (creating next)
+- ⏳ Onboarding tutorial (creating next)

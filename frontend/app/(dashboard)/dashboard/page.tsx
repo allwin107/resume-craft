@@ -5,6 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { FileText, History as HistoryIcon, TrendingUp, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import WelcomeTour from '@/components/onboarding/WelcomeTour';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -12,6 +13,7 @@ export default function DashboardPage() {
     const { user, token } = useAuth();
     const [recentAnalyses, setRecentAnalyses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showTour, setShowTour] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -32,6 +34,20 @@ export default function DashboardPage() {
         }
     };
 
+    useEffect(() => {
+        // Check if user has seen the tour
+        const hasSeenTour = localStorage.getItem('hasSeenTour');
+        if (!hasSeenTour) {
+            // Show tour after a short delay
+            setTimeout(() => setShowTour(true), 1000);
+        }
+    }, []);
+
+    const handleTourFinish = () => {
+        setShowTour(false);
+        localStorage.setItem('hasSeenTour', 'true');
+    };
+
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Welcome Section */}
@@ -44,9 +60,27 @@ export default function DashboardPage() {
                 </p>
             </div>
 
+            {/* Onboarding Tour */}
+            <WelcomeTour run={showTour} onFinish={handleTourFinish} />
+
+            {/* Try Examples Card */}
+            <div className="card bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200" data-tour="examples">
+                <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                        <h2 className="text-2xl font-bold mb-2">✨ Try Example Resumes</h2>
+                        <p className="text-gray-700 mb-4">
+                            New here? Test our AI with pre-loaded example resumes to see the magic in action!
+                        </p>
+                        <Link href="/examples" className="btn-primary inline-block">
+                            Browse Examples
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
             {/* Quick Actions */}
             <div className="grid md:grid-cols-2 gap-6">
-                <Link href="/analyze" className="card group hover:border-primary-500 cursor-pointer">
+                <Link href="/analyze" className="card group hover:border-primary-500 cursor-pointer" data-tour="upload-resume">
                     <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-500 transition-colors">
                             <FileText className="w-6 h-6 text-primary-600 group-hover:text-white" />

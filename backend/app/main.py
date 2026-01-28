@@ -8,11 +8,7 @@ import sentry_sdk
 import os
 
 # Import routers
-from app.api.auth_routes import router as auth_router
-from app.api.profile_routes import router as profile_router
-from app.api.analysis_routes import router as analysis_router
-from app.api.download_routes import router as download_router
-from app.api.editor_routes import router as editor_router
+from app.api import auth_routes, profile_routes, analysis_routes, download_routes, editor_routes, upload_routes, examples_routes
 
 # Initialize Sentry for error monitoring
 if os.getenv("SENTRY_DSN"):
@@ -59,11 +55,13 @@ async def log_requests(request, call_next):
 
 
 # Include routers
-app.include_router(auth_router)
-app.include_router(profile_router)
-app.include_router(analysis_router)
-app.include_router(download_router)
-app.include_router(editor_router)
+app.include_router(auth_routes.router)
+app.include_router(profile_routes.router)
+app.include_router(analysis_routes.router)
+app.include_router(download_routes.router)
+app.include_router(editor_routes.router)
+app.include_router(upload_routes.router)
+app.include_router(examples_routes.router)
 
 
 @app.on_event("startup")
