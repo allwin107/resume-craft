@@ -32,6 +32,8 @@ class AnalysisResponse(BaseModel):
     summary: str
     progress_status: str
     progress_percentage: int
+    improved_latex: Optional[str] = None
+    latex_storage_path: Optional[str] = None
     
     class Config:
         from_attributes = True
