@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import { ArrowLeft, Save, FileCode, Eye, Download } from 'lucide-react';
+import { ArrowLeft, Save, FileCode, Eye, Download, HelpCircle } from 'lucide-react';
+import KeyboardShortcutsHelp from '@/components/KeyboardShortcutsHelp';
 
 // Dynamically import Monaco Editor (client-side only)
 const Editor = dynamic(
@@ -23,6 +24,7 @@ export default function LatexEditorPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isCompiling, setIsCompiling] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
     const [error, setError] = useState('');
     const [saveMessage, setSaveMessage] = useState('');
 
@@ -97,6 +99,46 @@ export default function LatexEditorPage() {
         link.click();
     };
 
+    const handleEditorDidMount = (editor: any, monaco: any) => {
+        // Custom keyboard shortcut: Ctrl+S / Cmd+S to save
+        editor.addAction({
+            id: 'save-content',
+            label: 'Save',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+            run: () => {
+                handleSave();
+            }
+        });
+
+        // Custom keyboard shortcut: Ctrl+Shift+F / Cmd+Shift+F to format (placeholder for now)
+        editor.addAction({
+            id: 'format-document',
+            label: 'Format Document',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
+            run: () => {
+                // Format functionality will be added in next feature
+                alert('Format feature coming soon!');
+            }
+        });
+
+        // Custom keyboard shortcut: ? to show help
+        editor.addAction({
+            id: 'show-shortcuts-help',
+            label: 'Show Keyboard Shortcuts',
+            keybindings: [monaco.KeyCode.Slash | monaco.KeyMod.Shift], // Shift+/  = ?
+            run: () => {
+                setShowShortcutsHelp(true);
+            }
+        });
+
+        // Prevent default browser save
+        editor.onKeyDown((e: any) => {
+            if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KeyS) {
+                e.preventDefault();
+            }
+        });
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -127,6 +169,15 @@ export default function LatexEditorPage() {
                     {saveMessage && (
                         <span className="text-green-600 text-sm font-medium">{saveMessage}</span>
                     )}
+
+                    <button
+                        onClick={() => setShowShortcutsHelp(true)}
+                        className="btn-secondary flex items-center gap-2"
+                        title="Keyboard Shortcuts (Shift+?)"
+                    >
+                        <HelpCircle className="w-4 h-4" />
+                        Shortcuts
+                    </button>
 
                     <button
                         onClick={handleSave}
@@ -185,6 +236,7 @@ export default function LatexEditorPage() {
                             defaultLanguage="latex"
                             value={latexContent}
                             onChange={(value) => setLatexContent(value || '')}
+                            onMount={handleEditorDidMount}
                             theme="vs-light"
                             options={{
                                 minimap: { enabled: true },
@@ -231,6 +283,12 @@ export default function LatexEditorPage() {
                     </div>
                 )}
             </div>
+
+            {/* Keyboard Shortcuts Help */}
+            <KeyboardShortcutsHelp
+                isOpen={showShortcutsHelp}
+                onClose={() => setShowShortcutsHelp(false)}
+            />
         </div>
     );
 }
