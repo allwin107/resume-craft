@@ -6,7 +6,7 @@ from datetime import datetime
 
 from app.database.database import get_db
 from app.database.models import Feedback, User
-from app.auth.auth import get_current_user
+from app.auth.auth import get_optional_user
 
 router = APIRouter(prefix="/api/feedback", tags=["Feedback"])
 
@@ -37,7 +37,7 @@ class FeedbackResponse(BaseModel):
 async def submit_feedback(
     feedback_data: FeedbackCreate,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Submit user feedback

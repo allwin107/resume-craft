@@ -17,6 +17,8 @@ depends_on = None
 
 
 def upgrade():
+    # Create feedback table - indexes will be created automatically by SQLAlchemy
+    # since columns have index=True in the model
     op.create_table(
         'feedback',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -29,13 +31,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('ix_feedback_id', 'feedback', ['id'], unique=False)
-    op.create_index('ix_feedback_user_id', 'feedback', ['user_id'], unique=False)
-    op.create_index('ix_feedback_created_at', 'feedback', ['created_at'], unique=False)
 
 
 def downgrade():
-    op.drop_index('ix_feedback_created_at', table_name='feedback')
-    op.drop_index('ix_feedback_user_id', table_name='feedback')
-    op.drop_index('ix_feedback_id', table_name='feedback')
     op.drop_table('feedback')

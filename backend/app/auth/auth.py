@@ -87,7 +87,10 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> User:
-    """Get current authenticated user from JWT token"""
+    """
+    Get current authenticated user from JWT token
+    Raises 401 if token is invalid
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -96,18 +99,42 @@ async def get_current_user(
     
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
     
-    user = get_user_by_email(db, email=token_data.email)
+    user = db.query(User).filter(User.id == int(user_id)).first()
     if user is None:
         raise credentials_exception
     
     return user
+
+
+async def get_optional_user(
+    db: Session = Depends(get_db),
+    authorization: str = Header(None)
+) -> User | None:
+    """
+    Get current user if authenticated, None otherwise
+    Used for endpoints that support both authenticated and anonymous access
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    
+    token = authorization.split(" ")[1]
+    
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            return None
+        
+        user = db.query(User).filter(User.id == int(user_id)).first()
+        return user
+    except JWTError:
+        return None
 
 
 async def get_current_active_user(
