@@ -81,6 +81,30 @@ export default function AnalysisResultPage() {
         }
     };
 
+    const handleDownloadLatex = async () => {
+        try {
+            const response = await axios.get(
+                `${API_URL}/api/download/latex/${params.id}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    responseType: 'blob'
+                }
+            );
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `improved_resume_${params.id}.tex`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            alert('Failed to download LaTeX file. Please try again.');
+        }
+    };
+
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
@@ -121,14 +145,13 @@ export default function AnalysisResultPage() {
                     </a>
                     {analysis.improved_latex && (
                         <>
-                            <a
-                                href={`${API_URL}/api/download/latex/${params.id}`}
+                            <button
+                                onClick={handleDownloadLatex}
                                 className="btn-secondary"
-                                target="_blank"
                             >
                                 <Download className="w-5 h-5 mr-2" />
                                 Download LaTeX
-                            </a>
+                            </button>
                             <a
                                 href={`${API_URL}/api/download/pdf/${params.id}`}
                                 className="btn-primary"
